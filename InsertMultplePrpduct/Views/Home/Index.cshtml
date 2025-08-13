@@ -1,0 +1,71 @@
+﻿@model IEnumerable<InsertMultplePrpduct.Models.Category>
+@{
+    ViewBag.Title = "Index";
+}
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Index</title>
+</head>
+<body>
+    <p style="padding-top:10px">
+        Category:
+        <select id="CategoryId">
+            @foreach (var item in Model)
+            {
+                <option value="@item.CategoryId">@item.CategoryName</option>
+            }
+        </select>
+    </p>
+    <p>
+        Product: <input type="text" id="ProductName" />
+    </p>
+    <p>
+        Price: <input type="text" id="Price" />
+    </p>
+    <p>
+        <button type="button" onclick="addToList();">Add To List</button>
+        <button type="button" onclick="sendToServer();">Submit</button>
+    </p>
+    <p>
+        <ul id="ul"></ul>
+    </p>
+    <script>
+        var listProduct = [];
+        function addToList() {
+            var ProductName = document.getElementById('ProductName');
+            var Price = document.getElementById('Price');
+            var CategoryId = document.getElementById('CategoryId');
+            listProduct.push({ ProductName: ProductName.value, Price: Price.value, CategoryId: CategoryId.value });
+            ProductName.value = '';
+            Price.value = '';
+            displayProduct(listProduct);
+        }
+
+        function displayProduct(listProduct) {
+            var products = "";
+            for (var i = 0; i < listProduct.length; i++) {
+                products += "<li>" + listProduct[i].ProductName + " " + listProduct[i].Price + "</li>";
+            }
+            var ul = document.getElementById('ul');
+            ul.innerHTML = products;
+
+        }
+
+        function sendToServer() {
+            const http = new XMLHttpRequest()
+            http.open('POST', '/Home/AddProduct')
+            http.setRequestHeader('Content-type', 'application/json')
+            http.send(JSON.stringify({ ListProduct: listProduct })) 
+            http.onload = function () {
+               alert(http.responseText)
+            }
+        }
+
+    </script>
+</body>
+</html>
+
+
